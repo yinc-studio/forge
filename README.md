@@ -1,32 +1,43 @@
-# Yinc Skills
+# Forge
 
-Shared [Claude Code](https://claude.com/claude-code) skills for Yinc, packaged as a plugin marketplace.
+Shared [Claude Code](https://claude.com/claude-code) skills from Yinc, packaged as a plugin marketplace.
 
-A *skill* is a self-contained instruction set (a `SKILL.md` file, plus any supporting files) that Claude loads on demand. This repo is both a **marketplace** (`yinc`) and the **plugin** it hosts (`yinc-skills`), which bundles every skill below.
+A *skill* is a self-contained instruction set (a `SKILL.md` file, plus any supporting files) that Claude loads on demand. This repo is both a **marketplace** (`yinc`) and the **plugin** it hosts (`forge`), which bundles every skill below. Skills are prefixed `yf-` (Yinc Forge) so their provenance is legible wherever they end up.
 
 ## Install
 
 From a terminal:
 
 ```sh
-claude plugin marketplace add yinc-studio/skills
-claude plugin install yinc-skills@yinc
+claude plugin marketplace add yinc-studio/forge
+claude plugin install forge@yinc
 ```
 
 Or, inside Claude Code, run the equivalent slash commands:
 
 ```
-/plugin marketplace add yinc-studio/skills
-/plugin install yinc-skills@yinc
+/plugin marketplace add yinc-studio/forge
+/plugin install forge@yinc
 ```
 
-Once installed, skills are namespaced under the plugin and invoked as `/yinc-skills:<skill-name>` (e.g. `/yinc-skills:yinc-orchestrate`).
+Once installed, skills are namespaced under the plugin and invoked as `/forge:<skill-name>` (e.g. `/forge:yf-orchestrate`).
 
 ## Skills
 
 | Skill | Invoke | Description |
 |-------|--------|-------------|
-| [`yinc-orchestrate`](skills/yinc-orchestrate/) | `/yinc-skills:yinc-orchestrate` | Act as orchestrator for the session: route each unit of work to a subagent on the best-fit model, then integrate the results. |
+| [`yf-orchestrate`](skills/yf-orchestrate/) | `/forge:yf-orchestrate` | Act as orchestrator for the session: route each unit of work to a subagent on the best-fit model, then integrate the results. |
+
+## Use it without installing
+
+Every skill is a single `SKILL.md`. The simplest way to adopt one is to copy it and make it your own — drop the folder into your own skills directory and tune the routing to your models and your work:
+
+```sh
+# User-level (available in every session)
+cp -R skills/yf-orchestrate ~/.claude/skills/
+```
+
+Copied this way there is no plugin namespace, so it is invoked directly as `/yf-orchestrate`.
 
 ## Updating
 
@@ -38,7 +49,7 @@ claude plugin marketplace update yinc
 
 ## Adding a skill
 
-1. Create `skills/<skill-name>/SKILL.md` with YAML frontmatter (`name`, `description`) followed by the instructions.
+1. Create `skills/yf-<skill-name>/SKILL.md` with YAML frontmatter (`name`, `description`) followed by the instructions.
 2. Add a row to the table above.
 3. Bump the plugin version (see [Updating](#updating)).
 
@@ -48,9 +59,9 @@ claude plugin marketplace update yinc
 .
 ├── .claude-plugin/
 │   ├── marketplace.json   # marketplace manifest (name: yinc)
-│   └── plugin.json        # plugin manifest (name: yinc-skills)
+│   └── plugin.json        # plugin manifest (name: forge)
 ├── skills/
-│   └── yinc-orchestrate/
+│   └── yf-orchestrate/
 │       └── SKILL.md
 └── README.md
 ```

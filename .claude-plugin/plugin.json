@@ -1,11 +1,11 @@
 {
-  "name": "yinc-skills",
-  "description": "Shared Claude Code skills for Yinc.",
+  "name": "forge",
+  "description": "Shared Claude Code skills from Yinc.",
   "version": "0.1.0",
   "author": {
     "name": "Yinc"
   },
-  "homepage": "https://github.com/yinc-studio/skills",
-  "repository": "https://github.com/yinc-studio/skills.git",
+  "homepage": "https://github.com/yinc-studio/forge",
+  "repository": "https://github.com/yinc-studio/forge.git",
   "license": "MIT"
 }
