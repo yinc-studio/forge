@@ -10,7 +10,7 @@
       "name": "forge",
       "source": "./",
       "description": "Yinc's shared Claude Code skills. Currently ships yf-orchestrate, a multi-agent routing skill.",
-      "version": "0.1.0"
+      "version": "0.1.1"
     }
   ]
 }
