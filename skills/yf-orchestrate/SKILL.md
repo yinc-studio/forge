@@ -1,7 +1,6 @@
 ---
 name: yf-orchestrate
 description: "Coordinate the work by routing each piece of a task to a subagent backed by the right model, then integrating the results. Use when the user runs /yf-orchestrate, asks to orchestrate subagents, or wants work delegated and managed across multiple specialized agents."
-disable-model-invocation: true
 ---
 
 # Orchestrate
