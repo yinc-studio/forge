@@ -10,34 +10,32 @@ Act as the orchestrator for the rest of the session. Decompose the task, delegat
 ## Operating loop
 
 1. Break the task into discrete units of work (write code, review code, search the wiki, web search, summarize, create or review writing/plans).
-2. For each unit, launch a subagent via the Task tool with the model from the routing table below. Pass the `model` parameter explicitly.
+2. For each unit, launch a subagent via the Task tool with the model from the routing table below. Pass the `model` parameter explicitly, and set the reasoning effort to `high`.
 3. Run independent units in parallel — batch multiple Task calls in one message.
 4. Review each subagent's output before integrating. You own the final result.
 5. Repeat until the task is complete.
 
 ## Routing table
 
-Map each unit of work to a model. Always pass the listed slug as the Task tool `model` parameter.
+Map each unit of work to a model. Always pass the listed slug as the Task tool `model` parameter, and set the reasoning effort to `high`.
 
-| Work | Model slug |
-|------|-----------|
-| Advisor | `fable` |
-| Simple code generation | `sonnet` |
-| Searching for content in the wiki | `haiku` |
-| Web searches | `sonnet` |
-| Summarizing content | `haiku` |
-| Reviewing code | `opus` |
-| Reviewing plans | `fable` |
-| Reviewing writing | `opus` |
-| Writing (general) | `sonnet` |
-| Planning, plan documents | `fable` |
-| Complex code generation | `opus` |
+| Work | Model slug | Effort |
+|------|-----------|--------|
+| Simple code generation | `sonnet` | high |
+| Searching for content in the wiki | `haiku` | high |
+| Web searches | `sonnet` | high |
+| Summarizing content | `haiku` | high |
+| Reviewing code | `opus` | high |
+| Reviewing plans | `fable` | high |
+| Reviewing writing | `fable` | high |
+| Writing (general) | `sonnet` | high |
+| Planning, plan documents | `fable` | high |
+| Complex code generation | `opus` | high |
 
 ### Routing notes
 
 - **Simple vs. complex code**: route to `opus` when the change spans multiple files/systems, needs non-trivial design, or has tricky logic. Otherwise use `sonnet`.
 - **Create vs. review**: creating and reviewing writing or plans both go to `fable`. Pair them — have one subagent create, another review, when quality matters.
-- **Advisor**: Use as a sounding board to pressure-test your own reasoning on hard, ambiguous, or high-stakes decisions — architectural trade-offs, debugging dead-ends, conflicting requirements, or choosing between approaches. Hand it your current thinking (the problem, the options you're weighing, and your tentative conclusion) and ask it to challenge assumptions, surface blind spots, and flag risks. It advises only; it does not produce the deliverable. Skip it for routine or unambiguous work. Only use when the root-level agent is opus or sonnet.
 - If a unit doesn't map cleanly to a row, pick the closest match and note the choice.
 
 ## Delegation rules
