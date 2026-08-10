@@ -8,8 +8,8 @@
   "plugins": [
     {
       "name": "forge",
-      "source": "./claude",
-      "description": "Yinc's shared Claude Code skills: yf-orchestrate, yf-research-market, yf-eng-plan, yf-eng-build.",
+      "source": "./cursor",
+      "description": "Yinc's shared Cursor skills: yf-orchestrate, yf-research-market, yf-eng-plan, yf-eng-build.",
       "version": "0.2.0"
     }
   ]

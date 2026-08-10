@@ -1,0 +1,20 @@
+{
+  "name": "forge",
+  "displayName": "Forge",
+  "version": "0.2.0",
+  "description": "Shared Cursor skills from Yinc.",
+  "author": {
+    "name": "Yinc"
+  },
+  "homepage": "https://github.com/yinc-studio/forge",
+  "repository": "https://github.com/yinc-studio/forge.git",
+  "license": "MIT",
+  "keywords": [
+    "yinc",
+    "forge",
+    "orchestration",
+    "engineering",
+    "planning"
+  ],
+  "skills": "./skills"
+}
