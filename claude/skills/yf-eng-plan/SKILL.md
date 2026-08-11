@@ -27,6 +27,16 @@ Pass `model` explicitly on every Task/Agent call using the exact ID from the tab
 
 Ground the technical spec in the **actual codebase** (and its `docs/adr/`, `docs/architecture/` when present). Phasing and validation must be discoverable from that research — do not invent an implementation sequence that ignores existing structure.
 
+## Writing for human review
+
+Each spec has two readers: the **user**, who decides whether to sign off, and the **build agent**, which executes the contract. The document body serves the user; machine-level detail goes in the Appendix. Rules for the body:
+
+1. Open with a **Read this first** section (half a page max): the problem in one sentence, the chosen approach in plain language, the 3–5 decisions that need the user's judgment, and what is risky. The user should be able to sign off from this section alone.
+2. Define every specialized term on first use; add a short **Glossary** subsection when more than a few are unavoidable.
+3. Keep paragraphs to ~3 sentences. Prefer short declarative sentences over dense prose.
+4. Frame each architecture decision as **Decision / Why / What we rejected** — not analysis prose.
+5. In the technical spec, keep the Implementation sequence body to a short plain-English entry per phase; the full per-phase contract (scope, acceptance, validation commands, done-when) lives in the **Appendix**, referenced by phase ID.
+
 ## Phase 1 — Product spec
 
 **Research and clarifying questions**
@@ -39,6 +49,7 @@ Ground the technical spec in the **actual codebase** (and its `docs/adr/`, `docs
 ```markdown
 # <Product title> — Product Spec
 
+## Read this first
 ## Problem / opportunity
 ## Goals & non-goals
 ## Users & stakeholders
@@ -63,7 +74,7 @@ For non-UI work (backend services, pipelines, infrastructure), mark **Experience
 
 **Design drafts (where UI applies):** include rough wireframes in **Design drafts / wireframes**, produced via `claude-sonnet-5` Task/Agent subagents. ASCII or mermaid embedded in the markdown is fine — capture visual hierarchy and key states (empty, loading, error, populated), not pixel detail.
 
-**Adversarial review:** launch one `claude-fable-5` `general-purpose` reviewer with the product-spec **path only**. The reviewer verifies against the codebase and docs via its own `claude-sonnet-5` subagents, edits the file directly; apply the acceptance rule above.
+**Adversarial review:** launch one `claude-fable-5` `general-purpose` reviewer with the product-spec **path only**. The reviewer verifies against the codebase and docs via its own `claude-sonnet-5` subagents, also enforces the **Writing for human review** rules, and edits the file directly; apply the acceptance rule above.
 
 **Sign-off gate:** present the reviewed product-spec and **wait for explicit sign-off**. Do not begin Phase 2 without it. If the user requests changes, revise (re-running review if the changes are substantial) and present again.
 
@@ -74,6 +85,7 @@ For non-UI work (backend services, pipelines, infrastructure), mark **Experience
 ```markdown
 # <Title> — Technical Spec
 
+## Read this first
 ## Context & touchpoints
 ## Architecture & key decisions
 ## Interfaces & contracts
@@ -81,14 +93,9 @@ For non-UI work (backend services, pipelines, infrastructure), mark **Experience
 ## Implementation sequence
 
 ### Phase: <id-slug>
-- **Intent:** observable state that becomes true
-- **Scope:** in / explicit out
+- **Intent:** one plain-English sentence — the observable state that becomes true
 - **Depends on:** phase ids or `none`
-- **Acceptance:** criteria traceable to the product spec
-- **Test strategy:** automated / characterization / build-typecheck / other (justify)
-- **Validation:** exact commands or procedures, env prerequisites, destructive/external notes
-- **Done when:** checklist of observables
-- **Docs expected:** none | ADR(s) | architecture concern update | AGENTS.md (as applicable)
+- **Contract:** Appendix — <id-slug>
 
 ## Testing strategy
 ## Rollout, flags & rollback
@@ -96,17 +103,28 @@ For non-UI work (backend services, pipelines, infrastructure), mark **Experience
 ## Documentation plan
 ## Open technical risks
 ## References
+## Appendix — implementation contract
+
+### <id-slug>
+- **Scope:** in / explicit out
+- **Acceptance:** criteria traceable to the product spec
+- **Test strategy:** one thin acceptance check — automated / characterization / build-typecheck / other (justify)
+- **Validation:** exact commands or procedures, env prerequisites, destructive/external notes
+- **Done when:** checklist of observables
+- **Docs expected:** none | ADR(s) | architecture concern update | AGENTS.md (as applicable)
 ```
 
 ### Implementation sequence (required contract for `/yf-eng-build`)
 
-Every phase must include the fields in the template above. Dependency order must be explicit. Validation commands must be runnable (or explicitly blocked on missing env). If research cannot fill a field, leave it as an open question — do not paper over gaps.
+Every phase appears twice: a body entry (Intent, Depends on) the user can read as a narrative, and an Appendix entry carrying the full contract fields in the template above. Dependency order must be explicit. Validation commands must be runnable (or explicitly blocked on missing env). If research cannot fill a field, leave it as an open question — do not paper over gaps.
+
+**Testing strategy (default):** per-phase testing is thin — one smoke-level acceptance check that proves the phase's Intent, not edge-case breadth. Comprehensive testing (edge cases, regression matrix, full test suite) is a dedicated **`test-hardening`** phase, last in the implementation sequence: it depends on all build phases and is gated on the user confirming the implementation by manual use of the product. Include it in every implementation sequence unless the user specifies otherwise; its Appendix entry states what the comprehensive suite must cover, or that a test-plan document is the deliverable instead.
 
 **Documentation plan:** state which ADRs / architecture concern files / AGENTS.md updates `/yf-eng-build` should produce when decisions land (following the target repo’s layout, e.g. `docs/adr/`, `docs/architecture/concerns/`). Binding decisions belong in the code repo as ADRs at build time — not only in this plan. Product/strategy stays in the wiki.
 
 **References** must link the product-spec path and every source file the plan relies on (including existing ADRs/architecture docs consulted).
 
-**Adversarial review:** launch a `claude-fable-5` review subagent with one delta — pass the **paths to both** the product-spec and the technical-spec (paths only, no pasted bodies). The reviewer trusts neither document, verifies against the actual code and docs via its own `claude-sonnet-5` subagents, and **edits only the technical-spec file** — the product-spec is signed off and frozen. Apply the acceptance rule, treating the signed-off spec as an explicit user decision. Reviewer must attack weak phases (missing Validation, vague Acceptance, ungrounded Docs expected).
+**Adversarial review:** launch a `claude-fable-5` review subagent with one delta — pass the **paths to both** the product-spec and the technical-spec (paths only, no pasted bodies). The reviewer trusts neither document, verifies against the actual code and docs via its own `claude-sonnet-5` subagents, and **edits only the technical-spec file** — the product-spec is signed off and frozen. Apply the acceptance rule, treating the signed-off spec as an explicit user decision. Reviewer must attack weak phases (missing Validation, vague Acceptance, ungrounded Docs expected) **and unreadable writing** (undefined jargon, dense paragraphs, decisions buried in prose, implementation detail leaking out of the Appendix into the body).
 
 **Deliver:** present the final technical-spec, summarizing key architecture decisions, the phased implementation sequence, docs/ADR expectations, and open technical risks needing the user's input. Note that execution is `/yf-eng-build`.
 

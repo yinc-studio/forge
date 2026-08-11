@@ -5,7 +5,9 @@ description: Executes a signed-off technical-spec.md in the target codebase with
 
 # Eng-build (execute technical spec)
 
-Implement a signed-off `technical-spec.md` in the **codebase repo** where the changes land. Status is `complete`, `partial`, or `blocked` — never “done” on vibes.
+Implement a signed-off `technical-spec.md` in the **codebase repo** where the changes land. Status is `complete`, `pending-manual-validation`, `partial`, or `blocked` — never “done” on vibes.
+
+Per-phase testing is deliberately thin — one acceptance check proving the phase's Intent — to shorten the path to the user manually using the product. Comprehensive testing (edge cases, regression matrix, full suite) is the trailing `test-hardening` phase, which runs after the user confirms the implementation by manual use (unless the technical spec or the user specifies otherwise).
 
 ## Models (exact Claude model IDs)
 
@@ -82,8 +84,8 @@ Do **not** write binding decisions only in chat or only in the wiki when the rep
 
 1. Orchestrator prepares a path-cited phase brief; pick builder model by complexity.
 2. **Builder** (single writer for the phase):
-   - Add or identify acceptance tests/evidence for **this phase**.
-   - **Mandated failing run:** when a suitable automated harness exists for new behavior or a bug fix, orchestrator must observe a **RED** run that fails for the intended reason *before* implementation. Exceptions (record in the build-run): existing coverage already asserts the criterion; characterization-only legacy; config/docs/generated/UI/infra where the phase’s Validation is non-test evidence — still require the plan’s stated evidence procedure. A RED caused by syntax/env/unrelated failure does **not** count.
+   - Add or identify **one thin acceptance check** (test or evidence procedure) for **this phase** — enough to prove the phase's Intent happened, not edge-case breadth. Edge cases, regression matrices, and comprehensive suites belong to the `test-hardening` phase.
+   - **Mandated failing run:** when a suitable automated harness exists for new behavior or a bug fix, orchestrator must observe a **RED** run of that check that fails for the intended reason *before* implementation. Exceptions (record in the build-run): existing coverage already asserts the criterion; characterization-only legacy; config/docs/generated/UI/infra where the phase’s Validation is non-test evidence — still require the plan’s stated evidence procedure. A RED caused by syntax/env/unrelated failure does **not** count.
    - Implement the phase scope.
 3. Orchestrator runs phase Validation + required regressions; must be green.
 4. On failure: at most **two** evidence-based repair loops; then `partial`/`blocked` with logs. No retry without a new hypothesis.
@@ -91,7 +93,14 @@ Do **not** write binding decisions only in chat or only in the wiki when the rep
 6. Re-validate after any reviewer edit.
 7. Mark phase complete only when the phase gate passes; else do not start dependents.
 
-### 3. Final
+### 3. Manual validation, then test hardening
+
+- After all implementation phases pass their gates, present the build to the user for **manual validation** — using the product, not reading logs. Set status `pending-manual-validation` in the build-run record. This can span sessions; resume via the `test-hardening` phase ID.
+- Once the user confirms the implementation by manual use, execute the **`test-hardening`** phase from the technical spec: edge cases, regression matrix, and the comprehensive test suite — or, when the spec says so, a test-plan document specifying that suite. Skip only when the technical spec or the user explicitly says so.
+- If the spec predates this contract and has no `test-hardening` phase, derive one from its Testing strategy section and record it in the build-run (mechanical gap).
+- Test hardening follows the same per-phase mechanics (builder → orchestrator-observed validation → reviewer), minus the RED mandate — its tests assert behavior that already exists and must pass green.
+
+### 4. Final
 
 - Run the authoritative full safe suite from plan + repo instructions (not merely the union of targeted tests). Report exactly what did/didn’t run.
 - Finish required ADR/architecture/AGENTS updates; link from build-run + wiki Promoted decisions as applicable.
@@ -114,6 +123,7 @@ Do **not** write binding decisions only in chat or only in the wiki when the rep
 ### Build complete iff
 
 - Every requested phase passed its phase gate.
+- User confirmed the implementation by manual use, and the `test-hardening` phase passed its gate (or was explicitly waived by the spec or the user). Until then the ceiling is `pending-manual-validation`.
 - Full safe suite passed after the last edit.
 - Required docs/ADR/architecture/AGENTS updates for the change are done (or explicitly N/A with reason in the build-run).
 - Report distinguishes new vs pre-existing failures, waivers, and checks that could not run.
