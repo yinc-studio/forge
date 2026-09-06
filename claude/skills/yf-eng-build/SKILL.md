@@ -14,9 +14,8 @@ Per-phase testing is deliberately thin — one acceptance check proving the phas
 | Work | `model` | Agent |
 |------|---------|-------|
 | Read-only context | `claude-sonnet-5` | `Explore` |
-| Straightforward builder | `claude-sonnet-5` | `general-purpose` |
-| Complex / multi-file builder | `claude-opus-5` | `general-purpose` |
-| Adversarial code review | `claude-fable-5` | `general-purpose` |
+| Builder (all code — every phase, any complexity) | `claude-opus-5` | `general-purpose` |
+| Adversarial code review | `claude-fable-5.1` | `general-purpose` |
 
 Pass `model` explicitly on every Task/Agent call using the exact ID from the table above, and set reasoning effort to `high`. Unsupported IDs are a hard preflight error — do not silently substitute. When `/yf-eng-build` is active, this routing overrides `yf-orchestrate`.
 
@@ -82,14 +81,14 @@ Do **not** write binding decisions only in chat or only in the wiki when the rep
 
 ### 2. Per phase (dependency order)
 
-1. Orchestrator prepares a path-cited phase brief; pick builder model by complexity.
+1. Orchestrator prepares a path-cited phase brief; launch the builder on `claude-opus-5` — always, including trivial or single-file changes.
 2. **Builder** (single writer for the phase):
    - Add or identify **one thin acceptance check** (test or evidence procedure) for **this phase** — enough to prove the phase's Intent happened, not edge-case breadth. Edge cases, regression matrices, and comprehensive suites belong to the `test-hardening` phase.
    - **Mandated failing run:** when a suitable automated harness exists for new behavior or a bug fix, orchestrator must observe a **RED** run of that check that fails for the intended reason *before* implementation. Exceptions (record in the build-run): existing coverage already asserts the criterion; characterization-only legacy; config/docs/generated/UI/infra where the phase’s Validation is non-test evidence — still require the plan’s stated evidence procedure. A RED caused by syntax/env/unrelated failure does **not** count.
    - Implement the phase scope.
 3. Orchestrator runs phase Validation + required regressions; must be green.
 4. On failure: at most **two** evidence-based repair loops; then `partial`/`blocked` with logs. No retry without a new hypothesis.
-5. Launch **one** reviewer (`claude-fable-5`) with paths only: product-spec, technical-spec, phase ID, repo root, changed-files manifest path, validation/build-run paths. Reviewer distrusts the docs, checks the repo, may fix code/tests/docs; must not weaken tests to pass; must flag plan contradictions instead of redesigning.
+5. Launch **one** reviewer (`claude-fable-5.1`) with paths only: product-spec, technical-spec, phase ID, repo root, changed-files manifest path, validation/build-run paths. Reviewer distrusts the docs, checks the repo, may fix code/tests/docs; must not weaken tests to pass; must flag plan contradictions instead of redesigning.
 6. Re-validate after any reviewer edit.
 7. Mark phase complete only when the phase gate passes; else do not start dependents.
 

@@ -10,7 +10,7 @@
       "name": "forge",
       "source": "./claude",
       "description": "Yinc's shared Claude Code skills: yf-orchestrate, yf-research-market, yf-eng-plan, yf-eng-build.",
-      "version": "0.3.0"
+      "version": "0.3.1"
     }
   ]
 }
