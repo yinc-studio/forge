@@ -43,7 +43,7 @@ Invoke skills as `/yf-eng-plan`, `/yf-eng-build`, etc.
 |-------|--------|-------------|
 | [`yf-orchestrate`](claude/skills/yf-orchestrate/) | `/yf-orchestrate` | Act as orchestrator for the session: route each unit of work to a subagent on the best-fit model, then integrate the results. |
 | [`yf-research-market`](claude/skills/yf-research-market/) | `/yf-research-market` | Breadth-first market validation scan for a business idea: parallel lane research, structured findings, and a depth menu. |
-| [`yf-eng-plan`](claude/skills/yf-eng-plan/) | `/yf-eng-plan` | Two-phase software planning: product-spec → (sign-off) → technical-spec with a phased `/yf-eng-build` contract. |
+| [`yf-eng-plan`](claude/skills/yf-eng-plan/) | `/yf-eng-plan` | Two-phase software planning in one wiki spec (product → sign-off → technical) with a phased `/yf-eng-build` contract; Linear optional for outstanding work. |
 | [`yf-eng-build`](claude/skills/yf-eng-build/) | `/yf-eng-build` | Execute a signed-off technical-spec with phased test-first implementation, observed validation, and ADR/architecture updates. |
 
 Claude bodies: [`claude/skills/`](claude/skills/). Cursor counterparts: [`cursor/skills/`](cursor/skills/).
