@@ -1,7 +1,7 @@
 {
   "name": "forge",
   "description": "Shared Claude Code skills from Yinc.",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "author": {
     "name": "Yinc"
   },

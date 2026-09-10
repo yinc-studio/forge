@@ -29,7 +29,8 @@ Pass `model` explicitly on every Task/Agent call using the exact ID from the tab
 6. Orchestrator **observes** validation (shell exit codes). Agent claims are not evidence.
 7. Product-spec and technical-spec are **read-only** during `/yf-eng-build`. Reviewer edits code/tests/docs artifacts only — never the signed-off plans or evidence logs.
 8. Accept reviewer edits unless they clearly contradict the signed-off docs or an explicit user answer; then stop and surface the conflict.
-9. Do not commit/push/PR/deploy unless the user separately authorizes it.
+9. **Per-phase commit:** when a phase passes its gate, the orchestrator commits that phase's change set in the **target codebase repo** before starting the next phase. One commit per phase — do not bundle phases.
+10. Do not push/PR/deploy unless the user separately authorizes it.
 
 ## Inputs
 
@@ -51,7 +52,7 @@ Create/update a durable run record **in the repo being changed** (not only in ch
 
 - Default: `docs/builds/YYYY-MM-DD-<slug>.md` when `docs/` exists; otherwise `builds/YYYY-MM-DD-<slug>.md`.
 - If the repo documents a different builds location, follow that.
-- Include: technical-spec + product-spec paths, phase statuses, acceptance→evidence map, changed paths, validation commands + exit codes, RED evidence, review summary, blockers, doc/ADR paths written.
+- Include: technical-spec + product-spec paths, phase statuses, **commit SHA per completed phase**, acceptance→evidence map, changed paths, validation commands + exit codes, RED evidence, review summary, blockers, doc/ADR paths written.
 - Resume only via phase ID after re-reading both signed-off docs, this record, and the current diff. If the record is missing/stale, reconstruct from paths + repo state — do not trust chat summaries.
 
 ## Documentation (same change set)
@@ -90,7 +91,12 @@ Do **not** write binding decisions only in chat or only in the wiki when the rep
 4. On failure: at most **two** evidence-based repair loops; then `partial`/`blocked` with logs. No retry without a new hypothesis.
 5. Launch **one** reviewer (`claude-fable-5.1`) with paths only: product-spec, technical-spec, phase ID, repo root, changed-files manifest path, validation/build-run paths. Reviewer distrusts the docs, checks the repo, may fix code/tests/docs; must not weaken tests to pass; must flag plan contradictions instead of redesigning.
 6. Re-validate after any reviewer edit.
-7. Mark phase complete only when the phase gate passes; else do not start dependents.
+7. **Commit the phase** (orchestrator only, after re-validation is green):
+   - Stage only this phase's scoped files plus build-run record updates for this phase. Do not stage unrelated working-tree changes.
+   - Message: follow the repo's `git log` style; include the phase ID and Intent from the spec (e.g. `phase-2: add session middleware`).
+   - Record the commit SHA in the build-run record for this phase.
+   - A failed commit (hooks, dirty index, not a git repo) blocks the phase — do not mark complete or start dependents.
+8. Mark phase complete only when the phase gate passes; else do not start dependents.
 
 ### 3. Manual validation, then test hardening
 
@@ -116,6 +122,7 @@ Do **not** write binding decisions only in chat or only in the wiki when the rep
 - No required check skipped (waiver → phase stays `partial`, risk disclosed).
 - Review findings fixed, user-accepted as residual risk, or proven inapplicable with paths.
 - Reviewer edits revalidated.
+- Phase committed; commit SHA recorded in the build-run.
 - No unexplained scope creep, disabled/weakened tests, or accidental unrelated edits.
 - No unresolved plan contradiction.
 
@@ -133,7 +140,7 @@ Do **not** write binding decisions only in chat or only in the wiki when the rep
 
 | Role | Who |
 |------|-----|
-| Orchestrator | Base agent — sequencing, shells, evidence, acceptance, docs checklist, final status |
+| Orchestrator | Base agent — sequencing, shells, evidence, per-phase commits, acceptance, docs checklist, final status |
 | Builder | One Task/Agent per phase — tests/evidence then implementation |
 | Reviewer | One Task/Agent per phase after green validation — independent fix/report |
 
