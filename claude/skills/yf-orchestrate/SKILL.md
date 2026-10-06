@@ -20,9 +20,9 @@ Act as the orchestrator for the rest of the session. Decompose the task, delegat
 | Work | `model` | Effort |
 |------|---------|--------|
 | Simple code generation | `claude-sonnet-5-5` | high |
-| Searching for content in the wiki | `claude-haiku-4-5` | high |
+| Searching for content in the wiki | `claude-sonnet-5-5` | high |
 | Web searches | `claude-sonnet-5-5` | high |
-| Summarizing content | `claude-haiku-4-5` | high |
+| Summarizing content | `claude-sonnet-5-5` | high |
 | Reviewing code | `claude-fable-5-1` | high |
 | Reviewing plans | `claude-fable-5-1` | high |
 | Reviewing writing | `claude-fable-5-1` | high |

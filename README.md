@@ -11,7 +11,7 @@ Each client has its own plugin directory with its own manifest and skill bodies.
 | Research / simple build | `claude-sonnet-5-5` | `cursor-grok-4.5-high` |
 | Complex build | `claude-opus-5-5` | `gpt-5.6-terra-medium` |
 | Plan / writing / code review | `claude-fable-5-1` | `claude-fable-5-thinking-high` |
-| Fast / wiki lookup | `claude-haiku-4-5` | `cursor-grok-4.5-high` |
+| Fast / wiki lookup | `claude-sonnet-5-5` | `cursor-grok-4.5-high` |
 
 ## Install
 
