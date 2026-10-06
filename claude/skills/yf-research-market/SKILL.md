@@ -19,8 +19,8 @@ These govern every step; when in doubt, resolve toward them.
 
 ## Model routing (exact Claude model IDs)
 
-- **Lane agents (Step 2):** Launch one Task/Agent subagent per lane in parallel with `model: claude-opus-5` and reasoning effort `high`. Pass `model` explicitly on every call.
-- **Depth pass (Step 4):** `claude-opus-5` with reasoning effort `high`.
+- **Lane agents (Step 2):** Launch one Task/Agent subagent per lane in parallel with `model: claude-opus-5-5` and reasoning effort `high`. Pass `model` explicitly on every call.
+- **Depth pass (Step 4):** `claude-opus-5-5` with reasoning effort `high`.
 - **Steps 0, 1, and 3** run on the orchestrating agent — do not delegate decomposition or synthesis to subagents.
 
 ## Pipeline

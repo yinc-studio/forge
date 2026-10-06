@@ -13,10 +13,10 @@ The document is the record. Chat is not.
 
 | Work | `model` | Agent |
 | ---- | ------- | ----- |
-| Research (code, specs, ADRs) | `claude-opus-5` | `Explore` |
-| Design / wireframes | `claude-opus-5` | `Explore` or `general-purpose` |
-| Adversarial review | `claude-fable-5` | `general-purpose` |
-| Reviewer's nested verification | `claude-sonnet-5` | `Explore` |
+| Research (code, specs, ADRs) | `claude-opus-5-5` | `Explore` |
+| Design / wireframes | `claude-opus-5-5` | `Explore` or `general-purpose` |
+| Adversarial review | `claude-fable-5-1` | `general-purpose` |
+| Reviewer's nested verification | `claude-sonnet-5-5` | `Explore` |
 
 Pass `model` explicitly on every Task/Agent call using the exact ID from the table above, and set reasoning effort to `high`. Unsupported IDs are a hard preflight error — do not silently substitute.
 
@@ -63,7 +63,7 @@ Legacy two-file wiki specs (`product-spec.md` + `technical-spec.md`) remain vali
 
 ## Always: light research subagents
 
-Before drafting product, and again before drafting technical, launch **light** `Explore` subagents in parallel (`claude-sonnet-5`). Every run, including thin product work — do not skip because the task "looks obvious."
+Before drafting product, and again before drafting technical, launch **light** `Explore` subagents in parallel (`claude-sonnet-5-5`). Every run, including thin product work — do not skip because the task "looks obvious."
 
 Typical units (merge or split to fit the work; 2–4 is usual):
 
@@ -146,9 +146,9 @@ Keep them light: tight question, path-cited bullets only. They inform; they do n
 
 For non-UI work, mark **Experience** as `N/A — <why>` and skip wireframes.
 
-**Design drafts (where UI applies):** rough wireframes in **Design drafts / wireframes**, via `claude-sonnet-5` Task/Agent subagents. ASCII or mermaid is fine — hierarchy and key states (empty, loading, error, populated), not pixel detail.
+**Design drafts (where UI applies):** rough wireframes in **Design drafts / wireframes**, via `claude-sonnet-5-5` Task/Agent subagents. ASCII or mermaid is fine — hierarchy and key states (empty, loading, error, populated), not pixel detail.
 
-**Adversarial review:** launch one `claude-fable-5.1` `general-purpose` reviewer with the wiki spec **path only**. The reviewer verifies against codebase and docs via its own `claude-sonnet-5` `Explore` subagents, enforces **Writing for human review**, attacks the **Product** half, must not invent Technical content, and edits the file directly. Apply the acceptance rule above.
+**Adversarial review:** launch one `claude-fable-5-1` `general-purpose` reviewer with the wiki spec **path only**. The reviewer verifies against codebase and docs via its own `claude-sonnet-5-5` `Explore` subagents, enforces **Writing for human review**, attacks the **Product** half, must not invent Technical content, and edits the file directly. Apply the acceptance rule above.
 
 **Sign-off gate:** present the reviewed Product half and **wait for explicit sign-off**. Do not begin Phase 2 without it. On sign-off, set **Status** to `product signed-off`. If Outstanding work is `linear`, create or update the issue now (pointer only) and set `**Work:**`.
 
@@ -178,7 +178,7 @@ Dependency order must be explicit. Validation commands must be runnable (or expl
 
 **References** must link every source the plan relies on (parent specs, ADRs, architecture docs, code paths). The Product half is in this same document — do not point at a separate product-spec file for new work.
 
-**Adversarial review:** launch one `claude-fable-5.1` `general-purpose` reviewer with the wiki spec **path only**. The reviewer trusts nothing in the document, verifies against code and docs via its own `claude-sonnet-5` `Explore` subagents, **edits only Technical** — Product is signed off and frozen — and enforces **Writing for human review**. Attack weak phases (missing Validation, vague Acceptance, ungrounded Docs expected, unreadable writing). Apply the acceptance rule, treating signed-off Product as an explicit user decision.
+**Adversarial review:** launch one `claude-fable-5-1` `general-purpose` reviewer with the wiki spec **path only**. The reviewer trusts nothing in the document, verifies against code and docs via its own `claude-sonnet-5-5` `Explore` subagents, **edits only Technical** — Product is signed off and frozen — and enforces **Writing for human review**. Attack weak phases (missing Validation, vague Acceptance, ungrounded Docs expected, unreadable writing). Apply the acceptance rule, treating signed-off Product as an explicit user decision.
 
 **Deliver:** present the finished spec, summarizing architecture decisions, the phased implementation sequence, docs/ADR expectations, and open technical risks needing the user's input. Set **Status** to `signed-off for /yf-eng-build` only when the user signs off the technical half (or explicitly treats the presented draft as accepted). Note that execution is `/yf-eng-build`.
 

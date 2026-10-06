@@ -19,21 +19,21 @@ Act as the orchestrator for the rest of the session. Decompose the task, delegat
 
 | Work | `model` | Effort |
 |------|---------|--------|
-| Simple code generation | `claude-sonnet-5` | high |
+| Simple code generation | `claude-sonnet-5-5` | high |
 | Searching for content in the wiki | `claude-haiku-4-5` | high |
-| Web searches | `claude-sonnet-5` | high |
+| Web searches | `claude-sonnet-5-5` | high |
 | Summarizing content | `claude-haiku-4-5` | high |
-| Reviewing code | `claude-fable-5` | high |
-| Reviewing plans | `claude-fable-5` | high |
-| Reviewing writing | `claude-fable-5` | high |
-| Writing (general) | `claude-sonnet-5` | high |
-| Planning, plan documents | `claude-fable-5` | high |
-| Complex code generation | `claude-opus-5` | high |
+| Reviewing code | `claude-fable-5-1` | high |
+| Reviewing plans | `claude-fable-5-1` | high |
+| Reviewing writing | `claude-fable-5-1` | high |
+| Writing (general) | `claude-sonnet-5-5` | high |
+| Planning, plan documents | `claude-fable-5-1` | high |
+| Complex code generation | `claude-opus-5-5` | high |
 
 ### Routing notes
 
-- **Simple vs. complex code**: route to `claude-opus-5` when the change spans multiple files/systems, needs non-trivial design, or has tricky logic. Otherwise use `claude-sonnet-5`.
-- **Create vs. review**: creating and reviewing writing or plans both go to `claude-fable-5`. Pair them — have one subagent create, another review, when quality matters.
+- **Simple vs. complex code**: route to `claude-opus-5-5` when the change spans multiple files/systems, needs non-trivial design, or has tricky logic. Otherwise use `claude-sonnet-5-5`.
+- **Create vs. review**: creating and reviewing writing or plans both go to `claude-fable-5-1`. Pair them — have one subagent create, another review, when quality matters.
 - If a unit doesn't map cleanly to a row, pick the closest match and note the choice.
 
 ## Delegation rules
